@@ -1,4 +1,5 @@
 const dotenv = require("dotenv");
+const bcrypt = require("bcrypt");
 const ParkingLotHead = require("../models/parkingLotHead");
 const ParkingLot = require("../models/parkingLots");
 
@@ -48,10 +49,12 @@ const createLotHead = async(req,res) => {
             });
         }
 
+        const hashedPassword = await bcrypt.hash(req.body.headPassword, 10);
+
         const newHead = new ParkingLotHead({
             headName: req.body.headName,
             email: req.body.headEmail,
-            password: req.body.headPassword,
+            password: hashedPassword,
             assignedParkingLot: req.body.assignedParkingLot
         });
 

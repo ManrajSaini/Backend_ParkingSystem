@@ -13,9 +13,26 @@ const parkingLotSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    hourlyRate: {
+    currHold: {
         type: Number,
-        required: true
+        default: 0,
+    },
+    vehicles: [{
+        vehicleNumber: String
+    }],
+    hourlyRate: {
+        car: {
+            type: Number,
+            default: 50
+        },
+        bike: {
+            type: Number,
+            default: 25
+        }
+    },
+    totalMoney: {
+        type: Number,
+        default: 0
     }
 });
 

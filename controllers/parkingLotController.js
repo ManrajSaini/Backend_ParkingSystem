@@ -1,7 +1,7 @@
 const ParkingLot = require("../models/parkingLots");
 
 const createNewParkingLot = async(req,res) => {
-    const lotLocation = await ParkingLot.findOne({location: req.body.location});
+    let lotLocation = await ParkingLot.findOne({location: req.body.location});
     if(lotLocation){
         return res.send({
             "success": false,
@@ -10,6 +10,7 @@ const createNewParkingLot = async(req,res) => {
             "data": null
         });
     }
+    lotLocation = req.body.location;
 
     const lotCapacity = req.body.capacity;
     if(lotCapacity < 5){
@@ -21,21 +22,66 @@ const createNewParkingLot = async(req,res) => {
         });
     }
 
-    const lotHourlyRate = req.body.hourlyRate;
-    if(lotHourlyRate > 100 || lotHourlyRate < 10){
+    const lotCurrHold = req.body.currHold;
+    if(lotCurrHold && lotCurrHold !== 0){
         return res.send({
             "success": false,
             "error_code": 404,
-            "message": "Parking Lot should have hourly rates between 10 to 100",
+            "message": "Intial curr holding should be 0",
+            "data": null
+        });
+    }
+
+    const newVehicles = req.body.vehicles;
+    if(newVehicles && newVehicles.length > 0){
+        return res.send({
+            "success": false,
+            "error_code": 404,
+            "message": "Cannot add new vehicles via this route",
+            "data": null
+        });
+    }
+
+    if(req.body.hourlyRate){
+        var lotHourlyRateCar = req.body.hourlyRate.car;
+        if(lotHourlyRateCar && (lotHourlyRateCar > 100 || lotHourlyRateCar < 10)){
+            return res.send({
+                "success": false,
+                "error_code": 404,
+                "message": "Parking Lot rates for car should be between 10 to 100",
+                "data": null
+            });
+        }
+
+        var lotHourlyRateBike = req.body.hourlyRate.bike;
+        if(lotHourlyRateBike && (lotHourlyRateBike > 70 || lotHourlyRateBike < 10)){
+            return res.send({
+                "success": false,
+                "error_code": 404,
+                "message": "Parking Lot rates for bike should be between 10 to 100",
+                "data": null
+            });
+        }
+    }
+
+    const lotTotalMoney = req.body.totalMoney;
+    if(lotTotalMoney && lotTotalMoney !== 0){
+        return res.send({
+            "success": false,
+            "error_code": 404,
+            "message": "Parking Lot money gathered should be 0 intially ",
             "data": null
         });
     }
     
     const newParkingLot = new ParkingLot({
         name: req.body.name,
-        location: req.body.location,
-        capacity: req.body.capacity,
-        hourlyRate: req.body.hourlyRate
+        location: lotLocation,
+        capacity: lotCapacity,
+        hourlyRate: {
+            car: lotHourlyRateCar,
+            bike: lotHourlyRateBike
+        }
     });
 
     try{
@@ -126,8 +172,15 @@ const updateSingleParkingLot = async(req,res) => {
             });
         }
 
-        const lotName = req.body.name;
-        const lotLocation = req.body.location;
+        var lotName = req.body.name;
+        var lotLocation = req.body.location;
+
+        if(!lotName)
+            lotName = updatedParkingLot.name;
+
+        if(!lotLocation)
+            lotLocation = updatedParkingLot.location;
+
         if(lotName !== updatedParkingLot.name || lotLocation !== updatedParkingLot.location){
             return res.send({
                 "success": false,
@@ -137,22 +190,68 @@ const updateSingleParkingLot = async(req,res) => {
             });
         }
 
-        const lotCapacity = req.body.capacity;
-        if(lotCapacity <= updatedParkingLot.capacity){
+        var lotCapacity = req.body.capacity;
+
+        if(!lotCapacity)
+            lotCapacity = updatedParkingLot.capacity;
+
+        if(lotCapacity < updatedParkingLot.capacity){
             return res.send({
                 "success": false,
                 "error_code": 404,
-                "message": "Parking Lot cannot be reduced",
+                "message": "Parking Lot capacity cannot be reduced",
                 "data": null
             });
         }
 
-        const lotHourlyRate = req.body.hourlyRate;
-        if(lotHourlyRate > 100 || lotHourlyRate < 10){
+        const lotCurrHold = req.body.currHold;
+        if(lotCurrHold && lotCurrHold !== updatedParkingLot.currHold){
             return res.send({
                 "success": false,
                 "error_code": 404,
-                "message": "Parking Lot should have hourly rates between 10 to 100",
+                "message": "Cannot update curr holding of vehicles in a lot",
+                "data": null
+            });
+        }
+
+        const newVehicles = req.body.vehicles;
+        if(newVehicles && newVehicles.length > 0){
+            return res.send({
+                "success": false,
+                "error_code": 404,
+                "message": "Cannot add new vehicles via this route",
+                "data": null
+            });
+        }
+
+        if(req.body.hourlyRate){
+            var lotHourlyRateCar = req.body.hourlyRate.car;
+            if(lotHourlyRateCar && (lotHourlyRateCar > 100 || lotHourlyRateCar < 10)){
+                return res.send({
+                    "success": false,
+                    "error_code": 404,
+                    "message": "Parking Lot rates for car should be between 10 to 100",
+                    "data": null
+                });
+            }
+
+            var lotHourlyRateBike = req.body.hourlyRate.bike;
+            if(lotHourlyRateBike && (lotHourlyRateBike > 70 || lotHourlyRateBike < 10)){
+                return res.send({
+                    "success": false,
+                    "error_code": 404,
+                    "message": "Parking Lot rates for bike should be between 10 to 100",
+                    "data": null
+                });
+            }
+        }
+
+        const lotTotalMoney = req.body.totalMoney;
+        if(lotTotalMoney && lotTotalMoney !== updatedParkingLot.totalMoney){
+            return res.send({
+                "success": false,
+                "error_code": 404,
+                "message": "Parking Lot money gathered cannot be updated",
                 "data": null
             });
         }
@@ -160,7 +259,8 @@ const updateSingleParkingLot = async(req,res) => {
         updatedParkingLot.name = lotName;
         updatedParkingLot.location = lotLocation;
         updatedParkingLot.capacity = lotCapacity;
-        updatedParkingLot.hourlyRate = lotHourlyRate;
+        updatedParkingLot.hourlyRate.car = lotHourlyRateCar;
+        updatedParkingLot.hourlyRate.bike = lotHourlyRateBike;
 
         await updatedParkingLot.save();
 
@@ -215,10 +315,46 @@ const deleteSingleParkingLot = async(req,res) => {
     }
 };
 
+const totalMoney = async(req,res) => {
+    try {
+        const allLots = await ParkingLot.find();
+
+        if(allLots.length === 0){
+            return res.send({
+                "success": false,
+                "error_code": 400,
+                "message": "Parking Lots not created yet",
+                "data": null
+            });
+        }
+
+        let moneyGathered = 0;
+        allLots.map((lot) => {
+            moneyGathered += lot.totalMoney;
+        });
+
+        return res.status(200).send({
+            "success": true,
+            "error_code": null,
+            "message": "Successfully fetched total money gathered till now",
+            "data": moneyGathered
+        });
+        
+    } catch (err) {
+        return res.send({
+            "success": false,
+            "error_code": 500,
+            "message": err.message,
+            "data": null
+        });
+    }    
+};
+
 module.exports = {
     createNewParkingLot,
     fetchAllParkingLots,
     fetchSingleParkingLot,
     updateSingleParkingLot,
-    deleteSingleParkingLot
+    deleteSingleParkingLot,
+    totalMoney
 } 

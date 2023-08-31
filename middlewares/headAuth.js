@@ -1,5 +1,6 @@
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
+const ParkingLotHead = require("../models/parkingLotHead");
 
 dotenv.config();
 
@@ -11,7 +12,7 @@ const headAuthentication = async(req,res,next) => {
             "success": false,
             "error_code": 404,
             "message": "Unauthorized head",
-            "data": []
+            "data": null
         });
     }
 
@@ -24,11 +25,21 @@ const headAuthentication = async(req,res,next) => {
                 "success": false,
                 "error_code": 404,
                 "message": "Invalid Token",
-                "data": []
+                "data": null
             });
         }
 
-        req.head = head;
+        const actualHead = await ParkingLotHead.findById({_id: head._id});
+        if(!actualHead){
+            return res.send({
+                "success": false,
+                "error_code": 40,
+                "message": "Head does not exist",
+                "data": null
+            });
+        }
+
+        req.head = actualHead;
         next();
 
     } catch(err){

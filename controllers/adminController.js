@@ -299,5 +299,5 @@ module.exports = {
     unAssignLot,
     assignLot,
     fetchSingleHead,
-    fetchAllHeads
+    fetchAllHeads,
 }

@@ -39,30 +39,30 @@ Features and Functionality:
 # API Endpoints:
 The API endpoints are organized using Express routers for modularity and readability, with routes and controllers carefully designed for each module.
 
-- Admin Module Endpoints (AdminRouter):
-POST /api/admin/lot-head/register: Register a new parking lot head.
-GET /api/admin/lot-head/:id: Fetch information about a specific parking lot head.
-GET /api/admin/lot-head/: Fetch information about all parking lot heads.
-DELETE /api/admin/lot-head/:id: Delete a parking lot head.
-PATCH /api/admin/lot-head/:id/unAssignLot: Unassign a parking lot from a head.
-PATCH /api/admin/lot-head/:id/assignLot: Assign a parking lot to a head.
+- Admin Module Endpoints (AdminRouter):<br />
+POST /api/admin/lot-head/register: Register a new parking lot head.<br />
+GET /api/admin/lot-head/:id: Fetch information about a specific parking lot head.<br />
+GET /api/admin/lot-head/: Fetch information about all parking lot heads.<br />
+DELETE /api/admin/lot-head/:id: Delete a parking lot head.<br />
+PATCH /api/admin/lot-head/:id/unAssignLot: Unassign a parking lot from a head.<br />
+PATCH /api/admin/lot-head/:id/assignLot: Assign a parking lot to a head.<br />
 
-- Head Module Endpoints (HeadRouter):
-POST /api/head/login: Log in as a parking lot head.
-POST /api/head/logout: Log out as a parking lot head.
-POST /api/head/enterVehicle: Record a vehicle entry.
-POST /api/head/exitVehicle: Record a vehicle exit.
-GET /api/head/allLots: Get information about all parking lots of logedIn head.
-GET /api/head/singleLot/:id: Get information about a specific parking lot of logedIn head.
-GET /api/head/allLotMoney: Get information about the total money collected from all parking lots of logedIn head.
+- Head Module Endpoints (HeadRouter):<br />
+POST /api/head/login: Log in as a parking lot head.<br />
+POST /api/head/logout: Log out as a parking lot head.<br />
+POST /api/head/enterVehicle: Record a vehicle entry.<br />
+POST /api/head/exitVehicle: Record a vehicle exit.<br />
+GET /api/head/allLots: Get information about all parking lots of logedIn head.<br />
+GET /api/head/singleLot/:id: Get information about a specific parking lot of logedIn head.<br />
+GET /api/head/allLotMoney: Get information about the total money collected from all parking lots of logedIn head.<br />
 
-- Parking Lot Module Endpoints (ParkingLotRouter):
-POST /api/parking-lots/: Create a new parking lot.
-GET /api/parking-lots/: Fetch information about all parking lots.
-GET /api/parking-lots/totalMoney: Get information about the total money collected from all parking lots.
-GET /api/parking-lots/:id: Fetch information about a specific parking lot.
-PATCH /api/parking-lots/:id: Update information about a specific parking lot.
-DELETE /api/parking-lots/:id: Delete a specific parking lot.
+- Parking Lot Module Endpoints (ParkingLotRouter):<br />
+POST /api/parking-lots/: Create a new parking lot.<br />
+GET /api/parking-lots/: Fetch information about all parking lots.<br />
+GET /api/parking-lots/totalMoney: Get information about the total money collected from all parking lots.<br />
+GET /api/parking-lots/:id: Fetch information about a specific parking lot.<br />
+PATCH /api/parking-lots/:id: Update information about a specific parking lot.<br />
+DELETE /api/parking-lots/:id: Delete a specific parking lot.<br />
 
 # Conclusion:
 This parking system project addresses the real-life parking management challenges faced in Chandigarh. By combining modern technology, secure authentication, and robust RESTful APIs, we provide an efficient solution for administrators and parking lot users. This system enhances the overall parking experience in Chandigarh, making it easier to find, manage, and utilize parking facilities while ensuring secure and efficient operations.

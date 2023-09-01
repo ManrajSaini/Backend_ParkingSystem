@@ -18,7 +18,7 @@ const parkingLotSchema = new mongoose.Schema({
         default: 0,
     },
     vehicles: [{
-        vehicleNumber: String
+        type: String
     }],
     hourlyRate: {
         car: {

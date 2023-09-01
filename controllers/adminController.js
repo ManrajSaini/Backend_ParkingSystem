@@ -18,7 +18,7 @@ const createLotHead = async(req,res) => {
             });
         }
 
-        const currLot = req.body.assignedParkingLot;
+        const currLot = req.body.toAssignLot;
 
         const doesExist = await ParkingLot.findById({_id: currLot})
         if(!doesExist){
@@ -55,8 +55,11 @@ const createLotHead = async(req,res) => {
             headName: req.body.headName,
             email: req.body.headEmail,
             password: hashedPassword,
-            assignedParkingLot: req.body.assignedParkingLot
+            toAssignLot: currLot,
+            assignedParkingLot: []
         });
+
+        newHead.assignedParkingLot.push(currLot);
 
         await ParkingLotHead.create(newHead);
         return res.status(200).send({
@@ -123,8 +126,8 @@ const assignLot = async(req,res) => {
             });
         }
 
-        const toAssignLot = req.body.newLot;
-        const currNewLot = await ParkingLot.findById({_id: toAssignLot});
+        const toAssignNewLot = req.body.toAssignLot;
+        const currNewLot = await ParkingLot.findById({_id: toAssignNewLot});
 
         if(!currNewLot){
             return res.send({
@@ -135,7 +138,7 @@ const assignLot = async(req,res) => {
             });
         }
 
-        const indexToAdd = currHead.assignedParkingLot.indexOf(toAssignLot);
+        const indexToAdd = currHead.assignedParkingLot.indexOf(toAssignNewLot);
         if(indexToAdd !== -1){
             return res.send({
                 "success": false,
@@ -149,7 +152,7 @@ const assignLot = async(req,res) => {
 
         let alreadyAssignedLot = false;
         allParkingLotHeads.map((lotHead) => {
-            if(lotHead.assignedParkingLot.includes(toAssignLot)){
+            if(lotHead.assignedParkingLot.includes(toAssignNewLot)){
                 alreadyAssignedLot = true;
                 return;
             }
@@ -164,7 +167,7 @@ const assignLot = async(req,res) => {
             });
         }
 
-        currHead.assignedParkingLot.push(toAssignLot);
+        currHead.assignedParkingLot.push(toAssignNewLot);
         await currHead.save();
         
         return res.status(200).send({
@@ -197,7 +200,7 @@ const unAssignLot = async(req,res) => {
             });
         }
 
-        const toUnAssignLot = req.body.removeLot;
+        const toUnAssignLot = req.body.toUnAssignLot;
         const currNewLot = await ParkingLot.findById({_id: toUnAssignLot});
 
         if(!currNewLot){

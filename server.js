@@ -30,7 +30,7 @@ app.get("/", (req,res) => {
         "success": true,
         "error_code": null,
         "message": "Server is Running",
-        "about": "Designed a real life system design problem about how Parking Lot Systems Works."
+        "about": "Designed a real life system design problem about how Parking Lot Systems Works. Server is Live 🎉"
     });
 });
 

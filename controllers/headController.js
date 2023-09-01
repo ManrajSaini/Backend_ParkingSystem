@@ -90,7 +90,7 @@ const enterVehicle = async(req,res) => {
             });
         }
 
-        if(req.body.vehicleType.toLowerCase() !== "car" || req.body.vehicleType.toLowerCase() !== "bike"){
+        if(req.body.vehicleType.toLowerCase() !== "car" && req.body.vehicleType.toLowerCase() !== "bike"){
             return res.send({
                 "success": false,
                 "error_code": 400,
@@ -98,8 +98,8 @@ const enterVehicle = async(req,res) => {
                 "data": null
             });
         }
-
-        const indexToAdd = parkingLot.vehicles.indexOf(req.body.vehicleNum);
+        
+        const indexToAdd = parkingLot.vehicles.indexOf(req.body.vehicleNumber);
         if(indexToAdd !== -1){
             return res.send({
                 "success": false,
@@ -113,7 +113,7 @@ const enterVehicle = async(req,res) => {
         
         let alreadyParked = false;
         allParkingLot.map((lot) => {
-            if(lot.vehicles.includes(req.body.vehicleNum)){
+            if(lot.vehicles.includes(req.body.vehicleNumber)){
                 alreadyParked = true;
                 return;
             }
@@ -127,7 +127,7 @@ const enterVehicle = async(req,res) => {
                 "data": null
             });
         }
-
+        
         const numOfCurrCars = parkingLot.currHold;
         if(numOfCurrCars === parkingLot.capacity){
             return res.send({
@@ -137,19 +137,19 @@ const enterVehicle = async(req,res) => {
                 "data": null
             });
         }
-
+        
         const enterDetails = new Vehicle({
             parkingLotID : lotID,
-            vehicleNumber : req.body.vehicleNum,
+            vehicleNumber : req.body.vehicleNumber,
             vehicleType : req.body.vehicleType,
             enteredAt: new Date().toLocaleString("en-Us", {timeZone: 'Asia/Kolkata'})
         });
-
+        
         await Vehicle.create(enterDetails);
         parkingLot.currHold++;
-        parkingLot.vehicles.push(enterDetails.vehicleNumber);
+        parkingLot.vehicles.push(req.body.vehicleNumber);
         await parkingLot.save();
-
+        
         return res.status(200).send({
             "success": true,
             "error_code": null,
@@ -195,7 +195,7 @@ const exitVehicle = async(req,res) => {
             });
         }
 
-        if(req.body.vehicleType.toLowerCase() !== "car" || req.body.vehicleType.toLowerCase() !== "bike"){
+        if(req.body.vehicleType.toLowerCase() !== "car" && req.body.vehicleType.toLowerCase() !== "bike"){
             return res.send({
                 "success": false,
                 "error_code": 400,
@@ -204,7 +204,7 @@ const exitVehicle = async(req,res) => {
             });
         }
 
-        const currVehicle = await Vehicle.findOne({vehicleNumber: req.body.vehicleNum});
+        const currVehicle = await Vehicle.findOne({vehicleNumber: req.body.vehicleNumber});
         if(!currVehicle){
             return res.send({
                 "success": false,
@@ -214,7 +214,16 @@ const exitVehicle = async(req,res) => {
             });
         }
 
-        const indexToRemove = parkingLot.vehicles.indexOf(req.body.vehicleNum);
+        if(currVehicle.vehicleType !== req.body.vehicleType.toLowerCase()){
+            return res.send({
+                "success": false,
+                "error_code": 400,
+                "message": "This vehicle type is wrong",
+                "data": null
+            });
+        }
+
+        const indexToRemove = parkingLot.vehicles.indexOf(req.body.vehicleNumber);
         if(indexToRemove === -1){
             return res.send({
                 "success": false,
@@ -226,23 +235,38 @@ const exitVehicle = async(req,res) => {
 
         const exitTime = new Date().toLocaleString("en-Us", {timeZone: 'Asia/Kolkata'});
 
-        const totalTimeParked = (exitTime - currVehicle.enteredAt) / (1000 * 60 * 60);
+        const exitDate = new Date(exitTime);
+        const enterDate = new Date(currVehicle.enteredAt);
+        const timeDifference = exitDate - enterDate;
+
+        const totalTimeParked = (timeDifference / (1000 * 60 * 60));
 
         let totalSumMoney;
-        if(req.body.vehicleType === "car"){
-            totalSumMoney = totalTimeParked * parkingLot.hourlyRate.car;
+        if(totalTimeParked < 1){
+            if(req.body.vehicleType === "car"){
+                totalSumMoney = parkingLot.hourlyRate.car;
+            }
+            else{
+                totalSumMoney = parkingLot.hourlyRate.bike;
+            }
         }
+
         else{
-            totalSumMoney = totalTimeParked * parkingLot.hourlyRate.bike;
+            if(req.body.vehicleType === "car"){
+                totalSumMoney = totalTimeParked * parkingLot.hourlyRate.car;
+            }
+            else{
+                totalSumMoney = totalTimeParked * parkingLot.hourlyRate.bike;
+            }
         }
 
         const exitDetails = new Vehicle({
             parkingLotID : lotID,
-            vehicleNumber : req.body.vehicleNum,
+            vehicleNumber : req.body.vehicleNumber,
             vehicleType : req.body.vehicleType,
             enteredAt: currVehicle.enteredAt,
             exitedAt: exitTime,
-            totalTime: totalTimeParked,
+            totalTime: totalTimeParked*60,
             totalSum: totalSumMoney
         });
 
@@ -353,17 +377,18 @@ const allLotMoney = async(req,res) => {
             });
         }
 
-        const moneyGathered = 0;
-        allLotsOfHead.map(async (lotID) => {
-            const SingleLot = await ParkingLot.findById(lotID);
-            moneyGathered += singleLot.totalMoney;
-        });
-
+        var moneyGathered = 0;
+        await Promise.all(allLotsOfHead.map(async (lotID) => {
+            const singleLot = await ParkingLot.findById(lotID);
+            moneyGathered = moneyGathered + singleLot.totalMoney;
+            
+        }));
+        
         return res.status(200).send({
             "success": true,
             "error_code": null,
             "message": "Successfully fetched the lot",
-            "data": [moneyGathered]
+            "data": moneyGathered
         });
     } catch (err) {
         return res.send({

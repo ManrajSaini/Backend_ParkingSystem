@@ -13,10 +13,13 @@ const parkingLotHeadSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    assignedParkingLot: [{
+    toAssignLot: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'ParkingLot',
-        required: true
+        required: true 
+    },
+    assignedParkingLot: [{
+        type: String
     }]
 });
 

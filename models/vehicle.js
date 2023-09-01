@@ -19,6 +19,12 @@ const vehicleSchema = new mongoose.Schema({
     },
     exitedAt: {
         type: String
+    },
+    totalTime: {
+        type: Number
+    },
+    totalSum: {
+        type: Number
     }
 });
 

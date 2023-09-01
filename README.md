@@ -40,6 +40,7 @@ Features and Functionality:
 The API endpoints are organized using Express routers for modularity and readability, with routes and controllers carefully designed for each module.
 
 - Admin Module Endpoints (AdminRouter):<br />
+
 POST /api/admin/lot-head/register: Register a new parking lot head.<br />
 GET /api/admin/lot-head/:id: Fetch information about a specific parking lot head.<br />
 GET /api/admin/lot-head/: Fetch information about all parking lot heads.<br />
@@ -48,6 +49,7 @@ PATCH /api/admin/lot-head/:id/unAssignLot: Unassign a parking lot from a head.<b
 PATCH /api/admin/lot-head/:id/assignLot: Assign a parking lot to a head.<br />
 
 - Head Module Endpoints (HeadRouter):<br />
+
 POST /api/head/login: Log in as a parking lot head.<br />
 POST /api/head/logout: Log out as a parking lot head.<br />
 POST /api/head/enterVehicle: Record a vehicle entry.<br />
@@ -57,6 +59,7 @@ GET /api/head/singleLot/:id: Get information about a specific parking lot of log
 GET /api/head/allLotMoney: Get information about the total money collected from all parking lots of logedIn head.<br />
 
 - Parking Lot Module Endpoints (ParkingLotRouter):<br />
+
 POST /api/parking-lots/: Create a new parking lot.<br />
 GET /api/parking-lots/: Fetch information about all parking lots.<br />
 GET /api/parking-lots/totalMoney: Get information about the total money collected from all parking lots.<br />
